@@ -3,21 +3,33 @@
 
 <div class="game-body">
 	
-	<div class="menu"> 	
-		<p id="tower-label">@coordX </p>
-		<p id="tower-label">@coordY </p>
+	<div class="menu">
+		<div class="coordinates"> 
+			<p id="tower-label" style="color: white">X: @coordX </p>
+			<p id="tower-label" style="color: white">Y: @coordY </p>
+		</div>
+		
 		<div class="tower-menu">
 			<div class="color-select">
 				<input class="btn btn-secondary btn-lg btn-block" type="button" value="Change Color" @onclick="ChangeColor" style=@selectedColor>
 			</div>
 			<div class="start-stop">
-				<input class="btn btn-secondary btn-lg btn-block" type="button" value="Start/Stop" @onclick="PrintDictionary">
+				<input class="btn btn-secondary btn-lg btn-block" type="button" value="Start/Stop">
 			</div>
 		</div>
 	</div>
 
 	<div class="play-area" @onmousemove="@MouseMove" @onmousedown="MouseClick" >
 		<div class="pylon" style="@_EnemyXCSS; @_EnemyYCSS; @selectedColor;"></div>
+		@foreach(var i in @tDGameManager.TowerPositions)
+		{
+			<p> Key = @i.Key</p>
+			@foreach(var j in i.Value)
+			{
+				//<p>value x = @j</p>
+				<div class="pylon" style="@j; @selectedColor;"> @i.Key</div>
+			}
+		}
 	</div>
 
 </div>
@@ -28,7 +40,6 @@
 			@foreach(var j in i.Value)
 			{
 				<p>value x = @j</p>
-				
 			}
 		}
 
@@ -47,14 +58,9 @@
 
 	public string _EnemyXCSS => $"left:{tDGameManager.Obstacle.Health}px";
 	public string _EnemyYCSS => $"bottom:{tDGameManager.Obstacle.Speed}px";
-	public string towerCSSX;
-	public string towerCSSY;
-	public int where => tDGameManager.Cars.StartingPosition[0]; 
+	
 
-	public void PrintDictionary()
-	{
-	}
-
+	
 	protected override void OnInitialized()
 	{
 		tDGameManager = new TDGameManager();
@@ -73,12 +79,18 @@
 	//clears the lists. Inserts the coordinates to the list then adds the list and the key to the dictionary located in the game manager. 
 	public void MouseClick(MouseEventArgs e)
 	{
-		coord.Clear();
 		coord.Add(coordX.ToString());
 		coord.Add(coordY.ToString());
 		tDGameManager.AddTower(towerKey, SetCoords(coordX.ToString(), coordY.ToString()));
 		towerKey++;
 
+	}
+
+	//return a list of coordinates when called
+	public List<string> SetCoords(string x, string y)
+	{
+		List<string> temp = new List<string>() { $"left:{x}px", $"left:{y}px" };
+		return temp;
 	}
 
 	public  void ChangeColor() //this method just changes the color of the car 
@@ -90,11 +102,7 @@
 		}
 		selectedColor = ColorList[color];
 	}
-	//return a list of coordinates when called
-	public List<string> SetCoords(string x, string y)
-	{
-		List<string> temp = new List<string>() { x, y };
-		return temp;
-	}
+	
+	
 
 }
